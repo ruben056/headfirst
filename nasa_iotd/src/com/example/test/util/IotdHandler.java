@@ -16,7 +16,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -134,6 +133,8 @@ public class IotdHandler extends DefaultHandler {
 	}
 
 	public Map<String, IotdItem> getMap() {
+		
+		
 		return iotdMap;
 	}
 }

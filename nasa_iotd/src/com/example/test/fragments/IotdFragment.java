@@ -1,7 +1,12 @@
 package com.example.test.fragments;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +84,6 @@ public class IotdFragment extends Fragment {
 		
 		@Override
 		protected IotdHandler doInBackground(Object... params) {
-			
-			
 			IotdHandler handler = new IotdHandler();
 	        handler.processFeed();	        
 	        return handler;
@@ -92,7 +95,6 @@ public class IotdFragment extends Fragment {
 			pd.dismiss();
 		}
 	}
-
     
     private void resetDisplay(Map<String, IotdItem> resultMap){
     	
@@ -110,11 +112,33 @@ public class IotdFragment extends Fragment {
     	while(it.hasNext()){
     		list.add(it.next());
     	}
+    	
+    	// sort the list before adding to adapter
+    	Collections.sort(list, new Comparator<String>() {
+
+    		private String FORMAT = "EEE, dd MMM yyyy HH:mm:ss";    		
+			@Override
+			public int compare(String lhs, String rhs) {
+				
+				try {
+					SimpleDateFormat f = new SimpleDateFormat(FORMAT);
+					Date d1 = f.parse(lhs);
+					Date d2 = f.parse(rhs);
+					
+					return d1.before(d2) ? 1 : -1 ;
+					
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return 0;	
+			}
+		});
     	ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
     		android.R.layout.simple_spinner_item, list);
     	dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	dateSpinner.setAdapter(dataAdapter);
-    	dateSpinner.setSelection(list.size()-1);
+    	dateSpinner.setSelection(0);
     	
     	dateSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
     		
@@ -177,7 +201,6 @@ public class IotdFragment extends Fragment {
     	new RefreshThread(this).execute(new Object[0]);
     }
     
-        
     /** Button actions */
     public void onRefresh(View v) {
     	new RefreshThread(this).execute(new Object[0]);
@@ -185,6 +208,5 @@ public class IotdFragment extends Fragment {
     
     public void onSetWallPaper(View v){    	
     	new refreshWallPaper(this).execute(iotdMap.get(selectedItemKey));
-    }
-    
+    }    
 }
